@@ -1,6 +1,9 @@
 node_modules/
-config.json
-*.db
+.next/
 .env
+.env.local
+*.db
 .DS_Store
 dist/
+*.tsbuildinfo
+next-env.d.ts

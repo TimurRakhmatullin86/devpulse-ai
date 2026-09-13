@@ -1,179 +1,162 @@
 # DevPulse AI
 
-**Analytics dashboard for measuring ROI of AI coding tools in development teams.**
+**"AI helps or hurts your team? Find out with data."**
 
-DevPulse AI helps engineering leaders answer the question: *"Is our investment in AI tools actually paying off?"*
+DevPulse AI is an analytics dashboard that measures whether AI coding tools (Copilot, Cursor, Claude Code) deliver ROI — or cost you in rework. It connects to your GitHub repos via a GitHub App, detects AI-assisted pull requests, and computes honest metrics: speed gains, quality costs, and net productivity score.
 
 ## The Problem
 
-Organizations spend $20-100+/developer/month on AI coding assistants (Copilot, Cursor, Claude Code, etc.), but have no way to measure:
-- Are developers actually more productive?
-- Which AI tools deliver the most value?
-- What's the actual ROI in dollars?
-- How does AI adoption vary across teams?
+CTO pays $19–100/dev/month for AI tools. On 100 devs = $24K–120K/year. CFO asks: "Is this worth it?"
 
-## What DevPulse AI Does
+The paradox: AI-assisted developers merge PRs 2x faster. But 2–3 weeks later — more rework, more incidents. Traditional velocity metrics show growth while quality drops. No tool honestly answers: "AI = +$X or −$X for the team."
 
-DevPulse AI integrates with your existing development infrastructure to provide:
+## What DevPulse AI Measures
 
-### 📊 Key Metrics
-- **Velocity Delta** — PR throughput before vs after AI adoption
-- **Cycle Time Reduction** — time from first commit to merge
-- **AI Acceptance Rate** — % of AI suggestions kept vs discarded
-- **Cost per Developer Hour Saved** — actual dollar ROI
-- **Code Quality Score** — defect rates, test coverage changes
+| Metric | Definition |
+|--------|-----------|
+| **AI Usage Rate** | % of PRs with AI markers (Co-Authored-By, commit patterns, config files) |
+| **Cycle Time** | Hours from PR open to merge, split by AI vs non-AI |
+| **Rework Rate** | % of PRs requiring fix PRs within 14 days |
+| **Bug Rate** | Bug issues per 100 PRs (AI vs non-AI) |
+| **Code Churn** | Lines changed in the same file within 14 days |
+| **Review Load** | Average review comments per PR |
+| **Net Productivity Score** | (speed gain − quality cost), normalized |
 
-### 🔌 Integrations
-- **Git providers**: GitHub, GitLab, Bitbucket
-- **AI tools**: GitHub Copilot, Cursor, Claude Code, Cody, Tabnine
-- **Project management**: Jira, Linear, Shortcut
-- **CI/CD**: GitHub Actions, GitLab CI, CircleCI
+## Dashboard Pages
 
-### 📈 Dashboard Views
-- **Executive Summary** — high-level ROI and adoption metrics
-- **Team Breakdown** — per-team and per-developer analytics
-- **Tool Comparison** — head-to-head AI tool effectiveness
-- **Trend Analysis** — adoption curves and productivity over time
-- **Cost Center** — spend tracking and ROI calculations
+1. **Executive Summary** — one number: "AI = +X% or −X% for your team"
+2. **Speed vs Quality** — cycle time and rework rate, AI vs non-AI side-by-side
+3. **Per-Developer** — who benefits most? who needs help? scatter plot + table
+4. **Per-Repository** — same breakdown by repo
+5. **Trends** — weekly charts: adoption, speed, quality, ROI over time
+6. **ROI Calculator** — input license costs + salaries → get dollar ROI
+7. **Settings** — connected repos, detection config, webhook endpoint
 
-## Quick Start
+## AI Detection Heuristics
 
-```bash
-# Clone the repository
-git clone https://github.com/timur-rakhmatullin/devpulse-ai.git
-cd devpulse-ai
-
-# Install dependencies
-npm install
-
-# Configure data sources (copy and edit)
-cp config.example.json config.json
-
-# Start the dashboard
-npm start
-```
-
-Open `http://localhost:3000` in your browser.
-
-### Demo Mode
-
-To explore with synthetic data:
-
-```bash
-npm run demo
-```
-
-Or open `dashboard.html` directly in a browser for the standalone demo.
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────┐
-│                  DevPulse AI                     │
-├──────────┬──────────┬──────────┬────────────────┤
-│  GitHub  │  Copilot │   Jira   │   CI/CD        │
-│  API     │  Telemetry│  API    │   Metrics      │
-├──────────┴──────────┴──────────┴────────────────┤
-│              Data Ingestion Layer                │
-│         (event-driven, incremental sync)         │
-├─────────────────────────────────────────────────┤
-│              Analytics Engine                    │
-│    ┌─────────┐ ┌──────────┐ ┌──────────────┐   │
-│    │Velocity │ │ Quality  │ │  Cost/ROI    │   │
-│    │Analyzer │ │ Tracker  │ │  Calculator  │   │
-│    └─────────┘ └──────────┘ └──────────────┘   │
-├─────────────────────────────────────────────────┤
-│              Dashboard UI                        │
-│         (real-time, interactive charts)           │
-└─────────────────────────────────────────────────┘
-```
-
-## Configuration
-
-```json
-{
-  "dataSources": {
-    "github": {
-      "token": "ghp_...",
-      "org": "your-org",
-      "repos": ["repo1", "repo2"]
-    },
-    "copilot": {
-      "enabled": true
-    },
-    "jira": {
-      "baseUrl": "https://your-org.atlassian.net",
-      "token": "..."
-    }
-  },
-  "teams": {
-    "backend": ["dev1", "dev2"],
-    "frontend": ["dev3", "dev4"]
-  },
-  "aiTools": {
-    "adoptionDate": "2024-06-01",
-    "tools": ["copilot", "cursor", "claude-code"]
-  },
-  "costs": {
-    "copilot": { "perSeat": 19, "currency": "USD" },
-    "cursor": { "perSeat": 20, "currency": "USD" },
-    "claude-code": { "perSeat": 100, "currency": "USD" }
-  }
-}
-```
-
-## Metrics Methodology
-
-### Velocity Delta
-Compares PR merge rate in rolling 30-day windows before and after AI tool adoption. Normalized by team size and adjusted for seasonal patterns.
-
-### ROI Calculation
-```
-ROI = (Hours Saved × Average Developer Hourly Cost - Tool Licensing Cost) / Tool Licensing Cost × 100%
-```
-
-Where:
-- **Hours Saved** = Δ(cycle_time) × number_of_PRs
-- **Average Developer Hourly Cost** = configurable (default: $75/hr)
-- **Tool Licensing Cost** = sum of per-seat costs × active users
-
-### AI Acceptance Rate
-Tracked via editor telemetry (where available) or estimated from commit patterns showing AI-generated code retention.
-
-## Privacy & Security
-
-- All data stays within your infrastructure
-- No telemetry sent to DevPulse AI servers
-- API tokens stored locally, never transmitted
-- Aggregated metrics only — no individual keystroke tracking
-- GDPR-compliant: developer-level data can be anonymized
+Priority order (most reliable → least):
+1. `Co-Authored-By` header containing copilot/claude/cursor/ai
+2. Commit message patterns: "Generated by", "Auto-generated", `[ai]`
+3. PR body markers: "generated with Claude/Copilot/Cursor"
+4. AI config files in repo: `.cursor/`, `CLAUDE.md`, `.copilot`
+5. Heuristic: large PRs (500+ lines) authored in <30 minutes (experimental)
 
 ## Tech Stack
 
-- **Frontend**: Vanilla JS + Chart.js (zero framework dependencies)
-- **Backend**: Node.js with Express (optional, for API integrations)
-- **Database**: SQLite (embedded, zero config)
-- **Charts**: Chart.js 4.x with custom plugins
+- **Framework**: Next.js 14+ (App Router)
+- **UI**: Tailwind CSS + shadcn/ui + Recharts
+- **Database**: PostgreSQL + Prisma ORM
+- **Auth**: NextAuth.js (GitHub OAuth)
+- **GitHub Integration**: Octokit + GitHub App webhooks
+- **Deploy**: Docker Compose / Vercel + managed PostgreSQL
 
-## Roadmap
+## Quick Start
 
-- [ ] Slack/Teams bot for weekly ROI reports
-- [ ] ML-based anomaly detection for productivity drops
-- [ ] Custom metric builder (drag-and-drop)
-- [ ] Export to PDF/CSV for board presentations
-- [ ] Multi-org support for enterprises
-- [ ] Benchmark against industry averages
+### Prerequisites
+- Node.js 18+
+- PostgreSQL 15+
+- GitHub OAuth App credentials
 
-## Contributing
+### Setup
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+```bash
+git clone https://github.com/TimurRakhmatullin86/devpulse-ai.git
+cd devpulse-ai
+npm install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your credentials
+
+# Setup database
+npx prisma db push
+
+# Seed with demo data
+npm run db:seed
+
+# Start dev server
+npm run dev
+```
+
+Open http://localhost:3000
+
+### Docker
+
+```bash
+docker compose up -d
+```
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/summary?period=30d` | Executive summary metrics |
+| `GET` | `/api/metrics?period=90d` | Weekly trend data |
+| `GET` | `/api/developers?period=30d` | Per-developer breakdown |
+| `GET` | `/api/repos?period=30d` | Per-repository breakdown |
+| `GET` | `/api/prs?ai=true&limit=50` | PR list with filters |
+| `POST` | `/api/webhooks/github` | GitHub webhook endpoint |
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── dashboard/          # Executive Summary + Speed vs Quality
+│   ├── developers/         # Per-developer breakdown
+│   ├── repos/              # Per-repository breakdown
+│   ├── trends/             # Weekly trend charts
+│   ├── roi/                # ROI Calculator
+│   ├── settings/           # Configuration
+│   └── api/
+│       ├── webhooks/github # Webhook handler
+│       ├── summary/        # Summary endpoint
+│       ├── metrics/        # Trends endpoint
+│       ├── developers/     # Developer metrics
+│       ├── repos/          # Repo metrics
+│       └── prs/            # PR listing
+├── components/
+│   ├── charts/             # Recharts: trends, scatter, donut, bar
+│   ├── metrics/            # Stat cards, ROI score
+│   └── layout/             # Sidebar, header
+├── lib/
+│   ├── analyzer/           # AI detection engine
+│   ├── github/             # Octokit client + webhook handler
+│   ├── metrics/            # Metric computation
+│   └── db/                 # Prisma client
+prisma/
+├── schema.prisma           # Database schema (6 core tables)
+└── seed.ts                 # Demo data generator
+```
+
+## Database Schema
+
+```
+Organization ─── Repository ─── PullRequest ─── PRMetric
+     │                              │
+     ├── Developer ─────────────────┘
+     │
+     └── WeeklySnapshot
+```
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `NEXTAUTH_URL` | Yes | App URL (http://localhost:3000) |
+| `NEXTAUTH_SECRET` | Yes | Random secret for session encryption |
+| `GITHUB_CLIENT_ID` | Yes | GitHub OAuth App client ID |
+| `GITHUB_CLIENT_SECRET` | Yes | GitHub OAuth App client secret |
+| `GITHUB_APP_ID` | For webhooks | GitHub App ID |
+| `GITHUB_APP_PRIVATE_KEY` | For webhooks | GitHub App private key |
+| `GITHUB_WEBHOOK_SECRET` | For webhooks | Webhook signature verification |
+| `RESEND_API_KEY` | For digests | Email service API key |
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE).
 
 ## Author
 
-**Timur Rakhmatullin** — [GitHub](https://github.com/timur-rakhmatullin)
-
-Built to solve a real problem: proving that AI tools deliver measurable value to engineering organizations.
+**Timur Rakhmatullin** — [GitHub](https://github.com/TimurRakhmatullin86)
