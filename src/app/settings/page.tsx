@@ -32,32 +32,17 @@ export default function SettingsPage() {
         </div>
 
         <div className="bg-card border border-border rounded-lg p-5 space-y-4">
-          <h3 className="text-sm font-semibold">AI Detection Settings</h3>
+          <h3 className="text-sm font-semibold">AI Detection</h3>
           <p className="text-sm text-muted-foreground">
-            Configure how DevPulse AI identifies AI-assisted pull requests.
+            DevPulse AI detects AI-assisted pull requests using these methods:
           </p>
-          <div className="space-y-3">
-            <label className="flex items-center gap-3">
-              <input type="checkbox" defaultChecked className="rounded border-border" />
-              <span className="text-sm">Co-Authored-By headers (copilot, claude, cursor)</span>
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="checkbox" defaultChecked className="rounded border-border" />
-              <span className="text-sm">Commit message patterns (auto-generated, [ai])</span>
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="checkbox" defaultChecked className="rounded border-border" />
-              <span className="text-sm">PR body markers</span>
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="checkbox" defaultChecked className="rounded border-border" />
-              <span className="text-sm">AI config files (.cursor/, CLAUDE.md, .copilot)</span>
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="checkbox" className="rounded border-border" />
-              <span className="text-sm">Heuristic: large PRs authored quickly (experimental)</span>
-            </label>
-          </div>
+          <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+            <li>Co-Authored-By headers (copilot, claude, cursor)</li>
+            <li>Commit message patterns (auto-generated, [ai])</li>
+            <li>PR body markers</li>
+            <li>AI config files (.cursor/, CLAUDE.md, .copilot)</li>
+            <li>Heuristic: large PRs authored quickly (experimental)</li>
+          </ul>
         </div>
 
         <div className="bg-card border border-border rounded-lg p-5 space-y-4">
@@ -75,25 +60,6 @@ export default function SettingsPage() {
           ) : (
             <p className="text-sm text-muted-foreground">Not signed in</p>
           )}
-        </div>
-
-        <div className="bg-card border border-border rounded-lg p-5 space-y-4">
-          <h3 className="text-sm font-semibold">Weekly Email Digest</h3>
-          <p className="text-sm text-muted-foreground">
-            Receive a weekly summary of AI usage and productivity metrics.
-          </p>
-          <label className="flex items-center gap-3">
-            <input type="checkbox" className="rounded border-border" />
-            <span className="text-sm">Enable weekly digest</span>
-          </label>
-          <label className="block">
-            <span className="text-xs text-muted-foreground">Recipients (comma-separated)</span>
-            <input
-              type="text"
-              placeholder="cto@company.com, eng-lead@company.com"
-              className="mt-1 w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
-            />
-          </label>
         </div>
 
         <div className="bg-card border border-border rounded-lg p-5 space-y-4">

@@ -20,6 +20,27 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  events: {
+    async signIn({ user }) {
+      const existing = await prisma.organizationMember.findFirst({
+        where: { userId: user.id },
+      });
+      if (!existing) {
+        const org = await prisma.organization.upsert({
+          where: { id: "demo-org" },
+          update: {},
+          create: { id: "demo-org", name: "My Organization" },
+        });
+        await prisma.organizationMember.create({
+          data: {
+            userId: user.id,
+            orgId: org.id,
+            role: "admin",
+          },
+        });
+      }
+    },
+  },
   pages: {
     signIn: "/",
   },

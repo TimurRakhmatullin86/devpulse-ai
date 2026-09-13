@@ -7,7 +7,10 @@ function verifySignature(payload: string, signature: string | null): boolean {
   if (!secret || !signature) return false;
   const expected =
     "sha256=" + crypto.createHmac("sha256", secret).update(payload).digest("hex");
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+  const expectedBuf = Buffer.from(expected);
+  const signatureBuf = Buffer.from(signature);
+  if (expectedBuf.length !== signatureBuf.length) return false;
+  return crypto.timingSafeEqual(expectedBuf, signatureBuf);
 }
 
 export async function POST(request: NextRequest) {
@@ -15,7 +18,7 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get("x-hub-signature-256");
   const event = request.headers.get("x-github-event");
 
-  if (process.env.GITHUB_WEBHOOK_SECRET && !verifySignature(body, signature)) {
+  if (!verifySignature(body, signature)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 

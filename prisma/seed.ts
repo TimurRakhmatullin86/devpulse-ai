@@ -3,6 +3,12 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.pRMetric.deleteMany();
+  await prisma.pullRequest.deleteMany();
+  await prisma.weeklySnapshot.deleteMany();
+  await prisma.developer.deleteMany();
+  await prisma.repository.deleteMany();
+
   const org = await prisma.organization.upsert({
     where: { id: "demo-org" },
     update: {},
@@ -121,7 +127,9 @@ async function main() {
     const weekStart = new Date(now);
     weekStart.setDate(weekStart.getDate() - weeksAgo * 7);
     weekStart.setHours(0, 0, 0, 0);
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
+    const day = weekStart.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    weekStart.setDate(weekStart.getDate() + diff);
 
     const aiUsage = Math.min(85, 30 + (17 - weeksAgo) * 3.2 + (Math.random() - 0.5) * 4);
 

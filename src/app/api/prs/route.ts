@@ -18,8 +18,10 @@ export async function GET(request: NextRequest) {
   }
 
   const aiFilter = request.nextUrl.searchParams.get("ai");
-  const limit = parseInt(request.nextUrl.searchParams.get("limit") ?? "50", 10);
-  const offset = parseInt(request.nextUrl.searchParams.get("offset") ?? "0", 10);
+  const parsedLimit = parseInt(request.nextUrl.searchParams.get("limit") ?? "50", 10);
+  const parsedOffset = parseInt(request.nextUrl.searchParams.get("offset") ?? "0", 10);
+  const limit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 200) : 50;
+  const offset = Number.isFinite(parsedOffset) ? Math.max(parsedOffset, 0) : 0;
 
   const where: Record<string, unknown> = { repo: { orgId: membership.orgId } };
   if (aiFilter === "true") where.isAiAssisted = true;

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma";
 import { detectAiMarkers } from "@/lib/analyzer/ai-detection";
+import { createOctokit, fetchPRDetails } from "@/lib/github/client";
 
 interface WebhookPRPayload {
   action: string;
@@ -32,12 +33,24 @@ export async function handlePullRequestEvent(payload: WebhookPRPayload) {
     return { status: "ignored", action };
   }
 
-  const repo = await prisma.repository.findUnique({
+  const defaultOrg = await prisma.organization.findFirst();
+  if (!defaultOrg) {
+    return { status: "no_org", error: "No organization exists yet" };
+  }
+
+  let repo = await prisma.repository.findUnique({
     where: { fullName: repository.full_name },
     include: { org: true },
   });
   if (!repo) {
-    return { status: "repo_not_found", fullName: repository.full_name };
+    repo = await prisma.repository.create({
+      data: {
+        orgId: defaultOrg.id,
+        name: repository.name,
+        fullName: repository.full_name,
+      },
+      include: { org: true },
+    });
   }
 
   let developer = await prisma.developer.findUnique({
@@ -54,12 +67,36 @@ export async function handlePullRequestEvent(payload: WebhookPRPayload) {
     });
   }
 
+  let commitMessages: string[] = [];
+  let changedFiles: string[] = [];
+  let authoredDurationMinutes: number | undefined;
+  let reviewComments = pr.review_comments;
+
+  const userAccount = await prisma.account.findFirst({
+    where: { provider: "github" },
+    select: { access_token: true },
+  });
+  if (userAccount?.access_token) {
+    try {
+      const [owner, repoName] = repository.full_name.split("/");
+      const octokit = createOctokit(userAccount.access_token);
+      const details = await fetchPRDetails(octokit, owner, repoName, pr.number);
+      commitMessages = details.commitMessages;
+      changedFiles = details.changedFiles;
+      authoredDurationMinutes = details.authoredDurationMinutes;
+      reviewComments = details.reviewComments;
+    } catch {
+      // Fall back to payload data if API call fails
+    }
+  }
+
   const detection = detectAiMarkers({
-    commitMessages: [],
+    commitMessages,
     prBody: pr.body ?? "",
-    changedFiles: [],
+    changedFiles,
     linesAdded: pr.additions,
     commitCount: pr.commits,
+    authoredDurationMinutes,
   });
 
   const cycleTimeHours =
@@ -102,12 +139,12 @@ export async function handlePullRequestEvent(payload: WebhookPRPayload) {
     where: { prId: prRecord.id },
     update: {
       cycleTimeHours,
-      reviewComments: pr.review_comments,
+      reviewComments,
     },
     create: {
       prId: prRecord.id,
       cycleTimeHours,
-      reviewComments: pr.review_comments,
+      reviewComments,
     },
   });
 
