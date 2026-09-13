@@ -1,0 +1,66 @@
+{
+  "port": 3000,
+  "dataSources": {
+    "github": {
+      "token": "ghp_your_token_here",
+      "org": "your-org",
+      "repos": ["repo1", "repo2"],
+      "fetchIntervalMinutes": 60
+    },
+    "copilot": {
+      "enabled": true,
+      "metricsEndpoint": null
+    },
+    "jira": {
+      "baseUrl": "https://your-org.atlassian.net",
+      "email": "you@company.com",
+      "token": "your_jira_api_token",
+      "project": "PROJ"
+    },
+    "gitlab": {
+      "enabled": false,
+      "baseUrl": "https://gitlab.com",
+      "token": "",
+      "groupId": ""
+    }
+  },
+  "teams": {
+    "backend": {
+      "members": ["alice", "bob", "charlie"],
+      "aiAdoptionDate": "2024-06-01"
+    },
+    "frontend": {
+      "members": ["dave", "eve"],
+      "aiAdoptionDate": "2024-07-15"
+    },
+    "platform": {
+      "members": ["frank", "grace"],
+      "aiAdoptionDate": "2024-06-01"
+    }
+  },
+  "aiTools": {
+    "copilot": {
+      "perSeatCost": 19,
+      "currency": "USD",
+      "billing": "monthly"
+    },
+    "cursor": {
+      "perSeatCost": 20,
+      "currency": "USD",
+      "billing": "monthly"
+    },
+    "claude-code": {
+      "perSeatCost": 100,
+      "currency": "USD",
+      "billing": "monthly"
+    }
+  },
+  "costs": {
+    "averageDeveloperHourlyCost": 75,
+    "currency": "USD"
+  },
+  "privacy": {
+    "anonymizeDevelopers": false,
+    "retentionDays": 365
+  }
+}

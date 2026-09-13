@@ -1,0 +1,40 @@
+{
+  "name": "devpulse-ai",
+  "version": "0.1.0",
+  "description": "Analytics dashboard for measuring ROI of AI coding tools in development teams",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "demo": "DEMO_MODE=true node src/server.js",
+    "test": "node --test src/**/*.test.js",
+    "lint": "eslint src/"
+  },
+  "keywords": [
+    "ai",
+    "analytics",
+    "developer-productivity",
+    "roi",
+    "copilot",
+    "cursor",
+    "claude",
+    "devex",
+    "engineering-metrics",
+    "dashboard"
+  ],
+  "author": "Timur Rakhmatullin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timur-rakhmatullin/devpulse-ai"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "better-sqlite3": "^11.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  }
+}
