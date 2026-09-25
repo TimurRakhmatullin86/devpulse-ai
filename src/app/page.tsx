@@ -44,7 +44,7 @@ function useReveal() {
           }
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.05, rootMargin: "50px" }
     );
 
     const children = el.querySelectorAll(".reveal");
@@ -114,23 +114,23 @@ export default function LandingPage() {
       {/* ── Hero ────────────────────────────────────────────────── */}
       <section className="pt-32 pb-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="reveal inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full mb-6 border border-primary/20">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full mb-6 border border-primary/20">
             <Activity className="w-3 h-3" />
             Open source &middot; MIT License
           </div>
 
-          <h1 className="reveal text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
             Is Your AI Investment
             <br />
             <span className="text-primary">Paying Off?</span>
           </h1>
 
-          <p className="reveal mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             DevPulse AI measures whether Copilot, Cursor, and Claude Code deliver ROI
             — or cost you in rework.
           </p>
 
-          <div className="reveal mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={() => signIn("github")}
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity w-full sm:w-auto justify-center"
@@ -152,7 +152,7 @@ export default function LandingPage() {
           </div>
 
           {/* Mini dashboard illustration */}
-          <div className="reveal mt-16 max-w-3xl mx-auto">
+          <div className="mt-16 max-w-3xl mx-auto">
             <DashboardMockup />
           </div>
         </div>
@@ -802,7 +802,7 @@ const revealStyles = `
     transform: translateY(20px);
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
-  .revealed .reveal {
+  .reveal.revealed {
     opacity: 1;
     transform: translateY(0);
   }
