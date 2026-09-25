@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db/prisma";
 
@@ -11,11 +12,35 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
       authorization: { params: { scope: "read:user user:email read:org repo" } },
     }),
+    // Demo login — no password required, just the demo email
+    CredentialsProvider({
+      id: "demo-login",
+      name: "Demo Account",
+      credentials: {
+        email: { label: "Email", type: "email" },
+      },
+      async authorize(credentials) {
+        if (credentials?.email !== "demo@devpulse.dev") return null;
+        const user = await prisma.user.findUnique({
+          where: { email: "demo@devpulse.dev" },
+        });
+        return user;
+      },
+    }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        (session.user as { id: string }).id = user.id;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.id) {
+        (session.user as { id: string }).id = token.id as string;
       }
       return session;
     },
